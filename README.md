@@ -1,61 +1,171 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel JSON:API Demo
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Overview
 
-## About Laravel
+This project demonstrates the implementation of JSON:API specification on Laravel framework, showcasing a blog-style API that handles posts, comments, tags, and user authentication. It leverages Laravel Sanctum for API authentication and follows the [JSON:API specification](https://jsonapi.org/) using the [Laravel JSON:API](https://laraveljsonapi.io/) package.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+> the demo was created by following the [Laravel JSON:API Tutorial](https://laraveljsonapi.io/5.x/tutorial/)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Authentication with Laravel Sanctum
+- Blog Posts Management
+- Comments System
+- Tags Support
+- Author Management
+- JSON:API Compliant Responses
+- Relationship Management
 
-## Learning Laravel
+## Requirements
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- PHP 8.4+
+- Laravel 12.x
+- Composer
+- Database (MySQL, PostgreSQL, or SQLite)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Installation
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/ryoadi/laravel-jsonapi-demo.git
+   cd laravel-jsonapi-demo
+   ```
 
-## Laravel Sponsors
+2. Setup the project:
+   ```bash
+   composer setup
+   ```
+   This will install all dependencies, set up your environment, generate key, and run migrations.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+3. Configure database in `.env` if needed (SQLite is configured by default)
 
-### Premium Partners
+## API Documentation
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Authentication
 
-## Contributing
+To authenticate API requests:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1. Create a personal access token:
+   ```bash
+   # First, create a user if you haven't
+   php artisan tinker
+   >>> $user = \App\Models\User::factory()->create()
+   >>> $token = $user->createToken('api-token')
+   >>> $token->plainTextToken # Copy this token
+   ```
 
-## Code of Conduct
+   Or use the seeded user if available:
+   ```bash
+   php artisan tinker
+   >>> $user = \App\Models\User::first()
+   >>> $token = $user->createToken('api-token')
+   >>> $token->plainTextToken # Copy this token
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+2. Include token in Authorization header:
+   ```
+   Authorization: Bearer your-token-here
+   ```
 
-## Security Vulnerabilities
+### Posts
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Endpoint: `/api/v1/posts`
 
-## License
+- `GET /api/v1/posts` - List all posts
+- `GET /api/v1/posts/{id}` - Get specific post
+- `POST /api/v1/posts` - Create new post
+- `PATCH /api/v1/posts/{id}` - Update post
+- `DELETE /api/v1/posts/{id}` - Delete post
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Relationships:
+- `author` - The post's author (read-only)
+- `comments` - Post's comments (read-only)
+- `tags` - Post's tags (readable and modifiable)
+
+### Comments
+
+Comments are accessible through post relationships:
+
+- `GET /api/v1/posts/{id}/comments` - List post comments
+- `GET /api/v1/posts/{id}/relationships/comments` - Get comment relationships
+
+### Tags
+
+Tags can be managed through post relationships:
+
+- `GET /api/v1/posts/{id}/tags` - List post tags
+- `POST /api/v1/posts/{id}/relationships/tags` - Add tags to post
+- `PATCH /api/v1/posts/{id}/relationships/tags` - Update post tags
+- `DELETE /api/v1/posts/{id}/relationships/tags` - Remove tags from post
+
+### Authors
+
+Authors are accessible through post relationships:
+
+- `GET /api/v1/posts/{id}/author` - Get post author
+- `GET /api/v1/posts/{id}/relationships/author` - Get author relationship
+
+## Try it with Postman
+
+1. Download and install [Postman](https://www.postman.com/downloads/)
+
+2. Create a new collection in Postman
+
+3. Set up environment variables:
+   - Create a new environment
+   - Add variables:
+     - `base_url`: `http://localhost:8000/api/v1`
+     - `token`: Your authentication token (from the Authentication section)
+
+4. Example requests:
+   - List posts:
+     - Method: GET
+     - URL: `{{base_url}}/posts`
+     - Headers:
+       ```
+       Accept: application/vnd.api+json
+       Authorization: Bearer {{token}}
+       ```
+
+   - Create post:
+     - Method: POST
+     - URL: `{{base_url}}/posts`
+     - Headers:
+       ```
+       Accept: application/vnd.api+json
+       Content-Type: application/vnd.api+json
+       Authorization: Bearer {{token}}
+       ```
+     - Body:
+       ```json
+       {
+         "data": {
+           "type": "posts",
+           "attributes": {
+             "title": "My First Post",
+             "content": "This is the content of my first post"
+           }
+         }
+       }
+       ```
+
+5. Important Headers:
+   - Always include `Accept: application/vnd.api+json` header
+   - For POST/PATCH requests, include `Content-Type: application/vnd.api+json`
+   - Include `Authorization: Bearer your-token` for authenticated endpoints
+
+## Development
+
+To start the development server:
+
+```bash
+composer dev
+```
+
+This will start:
+- Laravel development server
+- Queue worker
+- Log viewer
+- Vite for frontend assets
+
+The API will be available at `http://localhost:8000/api/v1/`
