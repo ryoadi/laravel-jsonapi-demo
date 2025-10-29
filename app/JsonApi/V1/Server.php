@@ -33,6 +33,9 @@ class Server extends BaseServer
     {
         return [
             Posts\PostSchema::class,
+            Comments\CommentSchema::class,
+            Users\UserSchema::class,
+            Tags\TagSchema::class,
         ];
     }
 }
