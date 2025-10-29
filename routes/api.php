@@ -15,10 +15,10 @@ JsonApiRoute::server('v1')
     ->prefix('v1')
     ->resources(function (ResourceRegistrar $server) {
         $server->resource('posts', JsonApiController::class)
-            ->only('index', 'show', 'store')
+            ->only('index', 'show', 'store', 'update')
             ->relationships(function(Relationships $relationships) {
                 $relationships->hasOne('author')->readOnly();
                 $relationships->hasMany('comments')->readOnly();
-                $relationships->hasMany('tags')->readOnly();
+                $relationships->hasMany('tags');
             });
     });

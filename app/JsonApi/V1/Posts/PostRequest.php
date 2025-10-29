@@ -16,11 +16,16 @@ class PostRequest extends ResourceRequest
      */
     public function rules(): array
     {
+        $uniqueSlugRule = Rule::unique('posts', 'slug');
+        if ($this->isUpdating()) {
+            $uniqueSlugRule->ignore($this->model());
+        }
+
         return [
             'title' => ['required', 'string'],
             'content' => ['required', 'string'],
             'publishedAt' => ['nullable', JsonApiRule::dateTime()],
-            'slug' => ['required', 'string', Rule::unique('posts', 'slug')],
+            'slug' => ['required', 'string', $uniqueSlugRule],
             'tags' => [JsonApiRule::toMany()],
         ];
     }
