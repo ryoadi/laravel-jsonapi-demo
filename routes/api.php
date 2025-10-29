@@ -15,7 +15,7 @@ JsonApiRoute::server('v1')
     ->prefix('v1')
     ->resources(function (ResourceRegistrar $server) {
         $server->resource('posts', JsonApiController::class)
-            ->readOnly()
+            ->only('index', 'show', 'store')
             ->relationships(function(Relationships $relationships) {
                 $relationships->hasOne('author')->readOnly();
                 $relationships->hasMany('comments')->readOnly();
